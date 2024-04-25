@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load stock data
+def load_stock_data(filename):
+    return pd.read_csv(filename)
+
+# Calculate daily returns
+def calculate_daily_returns(df):
+    df['Daily_Return'] = (df['Close'] / df['Close'].shift(1)) - 1
+    return df
+
+# Calculate cumulative returns
+def calculate_cumulative_returns(df):
+    df['Cumulative_Return'] = (1 + df['Daily_Return']).cumprod() - 1
+    return df
+
+# Calculate moving averages
+def calculate_moving_averages(df, window=50):
+    df['SMA'] = df['Close'].rolling(window=window).mean()
+    df['EMA'] = df['Close'].ewm(span=window, min_periods=window-1).mean()
+    return df
+
+# Visualize stock data
+def visualize_stock_data(df):
+    plt.figure(figsize=(12, 6))
+    plt.plot(df['Close'], label='Close Price')
+    plt.plot(df['SMA'], label='50-Day SMA', linestyle='--')
+    plt.plot(df['EMA'], label='50-Day EMA', linestyle='--')
+    plt.title('Stock Price and Moving Averages')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.legend()
+    plt.show()
+
+# Main function
+def main():
+    # Load stock data
+    stock_data = load_stock_data('stock_data.csv')
+
+    # Calculate daily returns
+    stock_data = calculate_daily_returns(stock_data)
+
+    # Calculate cumulative returns
+    stock_data = calculate_cumulative_returns(stock_data)
+
+    # Calculate moving averages
+    stock_data = calculate_moving_averages(stock_data)
+
+    # Visualize stock data
+    visualize_stock_data(stock_data)
+
+if __name__ == "__main__":
+    main()
